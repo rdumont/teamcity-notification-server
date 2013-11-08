@@ -88,12 +88,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerSettings.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="TeamCity\BuildType.cs" />
+    <Compile Include="TeamCity\FullBuild.cs" />
     <Compile Include="TeamCity\ListedBuild.cs" />
     <Compile Include="TeamCity\BuildsPoller.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TeamCity\BuildsCollection.cs" />
     <Compile Include="TeamCity\RestApiClient.cs" />
+    <Compile Include="TeamCity\RunningInfo.cs" />
+    <Compile Include="TeamCity\TeamCityEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
