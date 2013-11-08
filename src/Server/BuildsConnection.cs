@@ -1,14 +1,26 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 
 namespace TeamCityNotifier.NotificationServer
 {
     public class BuildsConnection : PersistentConnection
     {
-        protected override async Task OnReceived(IRequest request, string connectionId, string buildTypeId)
+        protected override async Task OnReceived(IRequest request, string connectionId, string buildTypeIds)
         {
-            await this.Groups.Add(connectionId, buildTypeId);
-            await base.OnReceived(request, connectionId, buildTypeId);
+            var ids = buildTypeIds.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+                .Select(id => id.Trim());
+            
+            foreach (var id in ids)
+                await this.AddToGroups(connectionId, id);
+
+            await base.OnReceived(request, connectionId, buildTypeIds);
+        }
+
+        protected virtual Task AddToGroups(string connectionId, string buildTypeId)
+        {
+            return this.Groups.Add(connectionId, buildTypeId);
         }
     }
 }
