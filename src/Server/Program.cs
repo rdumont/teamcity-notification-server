@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Hosting;
-using TeamCityNotifier.NotificationServer.TeamCity;
 
 namespace TeamCityNotifier.NotificationServer
 {
@@ -22,8 +21,9 @@ namespace TeamCityNotifier.NotificationServer
             var url = "http://localhost:" + settings.Port;
             using (WebApp.Start<Startup>(url))
             {
-                var poller = new BuildsPoller(settings.TeamCity.Url, settings.TeamCity.Username,
-                    settings.TeamCity.Password, TimeSpan.FromSeconds(1));
+                var teamCityClient = new TeamCity.RestApiClient(settings.TeamCity.Url, settings.TeamCity.Username,
+                    settings.TeamCity.Password);
+                var poller = new TeamCity.BuildsPoller(teamCityClient, TimeSpan.FromSeconds(1));
 
                 var connectionGroups = GlobalHost.ConnectionManager.GetConnectionContext<BuildsConnection>().Groups;
 
