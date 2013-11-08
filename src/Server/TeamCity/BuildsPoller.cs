@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace TeamCityNotifier.NotificationServer.TeamCity
 {
-    class BuildsPoller
+    public class BuildsPoller
     {
         private readonly TimeSpan _interval;
         private const string RunningBuildsPath = "httpAuth/app/rest/builds?locator=running:true";
@@ -64,13 +63,18 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
             return builds != null ? builds.Builds.ToArray() : new Build[0];
         }
 
-        private static HttpClient CreateHttpClient(string serverUrl, string username, string password)
+        protected static HttpClient CreateHttpClient(string serverUrl, string username, string password)
         {
             var client = new HttpClient { BaseAddress = new Uri(serverUrl) };
-            var authenticationBytes = Encoding.UTF8.GetBytes(username + ":" + password);
-            var authentication = Convert.ToBase64String(authenticationBytes);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authentication);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            if (username != null && password != null)
+            {
+                var authenticationBytes = Encoding.UTF8.GetBytes(username + ":" + password);
+                var authentication = Convert.ToBase64String(authenticationBytes);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authentication);
+            }
+
             return client;
         }
     }
