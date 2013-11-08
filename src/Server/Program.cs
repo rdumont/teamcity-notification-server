@@ -27,22 +27,26 @@ namespace TeamCityNotifier.NotificationServer
 
                 var connectionGroups = GlobalHost.ConnectionManager.GetConnectionContext<BuildsConnection>().Groups;
 
-                poller.BuildStarted += build =>
+                poller.BuildStarted += async shortBuild =>
                 {
-                    connectionGroups.Send(build.BuildTypeId, new BuildNotification("start", build));
-                    Console.WriteLine("Build started: {0}, {1}%", build.BuildTypeId, build.PercentageComplete);
+                    var build = await teamCityClient.GetBuildAsync(shortBuild.Id);
+                    await connectionGroups.Send(build.BuildType.Id, new BuildNotification("start", build));
+                    Console.WriteLine("{0}: started", build.BuildType.Id);
                 };
 
-                poller.BuildUpdated += build =>
+                poller.BuildUpdated += async shortBuild =>
                 {
-                    connectionGroups.Send(build.BuildTypeId, new BuildNotification("update", build));
-                    Console.WriteLine("Build updated: {0}, {1}%", build.BuildTypeId, build.PercentageComplete);
+                    var build = await teamCityClient.GetBuildAsync(shortBuild.Id);
+                    await connectionGroups.Send(build.BuildType.Id, new BuildNotification("update", build));
+                    var percentage = build.RunningInfo == null ? 100 : build.RunningInfo.PercentageComplete;
+                    Console.WriteLine("{0}: {1}%", build.BuildType.Id, percentage);
                 };
 
-                poller.BuildStopped += build =>
+                poller.BuildStopped += async shortBuild =>
                 {
-                    connectionGroups.Send(build.BuildTypeId, new BuildNotification("stop", build));
-                    Console.WriteLine("Build stopped: {0}", build.BuildTypeId);
+                    var build = await teamCityClient.GetBuildAsync(shortBuild.Id);
+                    await connectionGroups.Send(build.BuildType.Id, new BuildNotification("stop", build));
+                    Console.WriteLine("{0}: finished with {1} - {2}", build.BuildType.Id, build.Status, build.StatusText);
                 };
 
                 await poller.StartAsync();
