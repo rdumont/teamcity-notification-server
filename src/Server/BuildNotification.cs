@@ -9,9 +9,9 @@ namespace TeamCityNotifier.NotificationServer
         public string EventType { get; set; }
 
         [JsonProperty(PropertyName = "build")]
-        public Build Build { get; set; }
+        public ListedBuild Build { get; set; }
 
-        public BuildNotification(string eventType, Build build)
+        public BuildNotification(string eventType, ListedBuild build)
         {
             EventType = eventType;
             Build = build;

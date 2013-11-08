@@ -3,17 +3,17 @@ using Newtonsoft.Json;
 
 namespace TeamCityNotifier.NotificationServer.TeamCity
 {
-    public class RunningBuilds
+    public class BuildsCollection
     {
         [JsonProperty(PropertyName = "count")]
         public int Count { get; set; }
 
         [JsonProperty(PropertyName = "build")]
-        public IList<Build> Builds { get; set; }
+        public IList<ListedBuild> Builds { get; set; }
 
-        public RunningBuilds()
+        public BuildsCollection()
         {
-            this.Builds = new List<Build>();
+            this.Builds = new List<ListedBuild>();
         }
     }
 }

@@ -11,9 +11,9 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
 
         private readonly RestApiClient _client;
 
-        public event Action<Build> BuildStarted;
-        public event Action<Build> BuildUpdated;
-        public event Action<Build> BuildStopped;
+        public event Action<ListedBuild> BuildStarted;
+        public event Action<ListedBuild> BuildUpdated;
+        public event Action<ListedBuild> BuildStopped;
 
         public BuildsPoller(RestApiClient client, TimeSpan interval)
         {
@@ -23,7 +23,7 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
 
         public async Task StartAsync()
         {
-            var previousBuilds = new Build[0];
+            var previousBuilds = new ListedBuild[0];
             while (true)
             {
                 var currentBuilds = await _client.GetRunningBuildsAsync();
@@ -34,7 +34,7 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
             }
         }
 
-        protected void TriggerBuildChanges(Build[] previousBuilds, Build[] currentBuilds)
+        protected void TriggerBuildChanges(ListedBuild[] previousBuilds, ListedBuild[] currentBuilds)
         {
             var startedBuilds = currentBuilds.Except(previousBuilds).ToArray();
             foreach (var build in startedBuilds)

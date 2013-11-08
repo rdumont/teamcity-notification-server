@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace TeamCityNotifier.NotificationServer.TeamCity
 {
-    public class Build : IEquatable<Build>
+    public class ListedBuild : IEquatable<ListedBuild>
     {
         [JsonProperty(PropertyName = "id")]
         public int Id { get; set; }
@@ -50,7 +50,7 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
             }
         }
 
-        public bool Equals(Build other)
+        public bool Equals(ListedBuild other)
         {
             if (ReferenceEquals(null, other)) return false;
             return this.Id.Equals(other.Id);
@@ -64,13 +64,13 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
             }
         }
 
-        public static bool operator ==(Build leftOperand, Build rightOperand)
+        public static bool operator ==(ListedBuild leftOperand, ListedBuild rightOperand)
         {
             if (ReferenceEquals(null, leftOperand)) return ReferenceEquals(null, rightOperand);
             return leftOperand.Equals(rightOperand);
         }
 
-        public static bool operator !=(Build leftOperand, Build rightOperand)
+        public static bool operator !=(ListedBuild leftOperand, ListedBuild rightOperand)
         {
             return !(leftOperand == rightOperand);
         }

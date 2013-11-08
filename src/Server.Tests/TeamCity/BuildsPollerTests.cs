@@ -19,14 +19,14 @@ namespace Server.Tests.TeamCity
                 // Arrange
                 var previousBuilds = new[]
                 {
-                    new Build {Id = 123},
-                    new Build {Id = 456}
+                    new ListedBuild {Id = 123},
+                    new ListedBuild {Id = 456}
                 };
                 var currentBuilds = new[]
                 {
-                    new Build {Id = 987},
-                    new Build {Id = 123},
-                    new Build {Id = 789}
+                    new ListedBuild {Id = 987},
+                    new ListedBuild {Id = 123},
+                    new ListedBuild {Id = 789}
                 };
 
                 var startingIds = new List<int>();
@@ -55,7 +55,7 @@ namespace Server.Tests.TeamCity
         {
         }
 
-        public void PubliclyTriggerBuildChanges(Build[] previousBuilds, Build[] currentBuilds)
+        public void PubliclyTriggerBuildChanges(ListedBuild[] previousBuilds, ListedBuild[] currentBuilds)
         {
             base.TriggerBuildChanges(previousBuilds, currentBuilds);
         }

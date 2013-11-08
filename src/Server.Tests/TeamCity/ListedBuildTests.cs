@@ -5,13 +5,13 @@ using TeamCityNotifier.NotificationServer.TeamCity;
 namespace Server.Tests.TeamCity
 {
     [TestFixture]
-    class BuildTests
+    class ListedBuildTests
     {
         [Test]
         public void Should_read_start_date()
         {
             // Arrange
-            var build = new Build {StartDateString = "20131107T153712-0200"};
+            var build = new ListedBuild {StartDateString = "20131107T153712-0200"};
 
             // Act
             var startDate = build.StartDate;
@@ -25,8 +25,8 @@ namespace Server.Tests.TeamCity
         public void Should_equate_correctly()
         {
             // Arrange
-            var build1 = new Build {Id = 123};
-            var build2 = new Build {Id = 123};
+            var build1 = new ListedBuild {Id = 123};
+            var build2 = new ListedBuild {Id = 123};
 
             // Act
             var equals = build1 == build2;

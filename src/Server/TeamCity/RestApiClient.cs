@@ -24,7 +24,7 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
             _httpClient = httpClient;
         }
 
-        public virtual async Task<Build[]> GetRunningBuildsAsync()
+        public virtual async Task<ListedBuild[]> GetRunningBuildsAsync()
         {
             var response = await _httpClient.GetAsync(RunningBuildsPath);
             if (response.StatusCode != HttpStatusCode.OK)
@@ -32,8 +32,8 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
                 throw new HttpRequestException("Status code was " + response.StatusCode);
             }
 
-            var builds = await response.Content.ReadAsAsync<RunningBuilds>();
-            return builds != null ? builds.Builds.ToArray() : new Build[0];
+            var builds = await response.Content.ReadAsAsync<BuildsCollection>();
+            return builds != null ? builds.Builds.ToArray() : new ListedBuild[0];
         }
 
         public static HttpClient CreateHttpClient(string serverUrl, string username, string password)
