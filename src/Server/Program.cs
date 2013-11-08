@@ -42,10 +42,10 @@ namespace TeamCityNotifier.NotificationServer
                     Console.WriteLine("{0}: {1}%", build.BuildType.Id, percentage);
                 };
 
-                poller.BuildStopped += async shortBuild =>
+                poller.BuildFinished += async shortBuild =>
                 {
                     var build = await teamCityClient.GetBuildAsync(shortBuild.Id);
-                    await connectionGroups.Send(build.BuildType.Id, new BuildNotification("stop", build));
+                    await connectionGroups.Send(build.BuildType.Id, new BuildNotification("finish", build));
                     Console.WriteLine("{0}: finished with {1} - {2}", build.BuildType.Id, build.Status, build.StatusText);
                 };
 

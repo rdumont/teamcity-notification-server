@@ -36,7 +36,7 @@ namespace Server.Tests.TeamCity
                 var poller = new TestableBuildsPoller();
                 poller.BuildStarted += build => startingIds.Add(build.Id);
                 poller.BuildUpdated += build => updatingIds.Add(build.Id);
-                poller.BuildStopped += build => stoppingIds.Add(build.Id);
+                poller.BuildFinished += build => stoppingIds.Add(build.Id);
 
                 // Act
                 poller.PubliclyTriggerBuildChanges(previousBuilds, currentBuilds);

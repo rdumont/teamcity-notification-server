@@ -13,7 +13,7 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
 
         public event Action<ListedBuild> BuildStarted;
         public event Action<ListedBuild> BuildUpdated;
-        public event Action<ListedBuild> BuildStopped;
+        public event Action<ListedBuild> BuildFinished;
 
         public BuildsPoller(RestApiClient client, TimeSpan interval)
         {
@@ -44,9 +44,9 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
             foreach (var build in updatedBuilds)
                 this.BuildUpdated(build);
 
-            var stoppedBuilds = previousBuilds.Except(currentBuilds);
-            foreach (var build in stoppedBuilds)
-                this.BuildStopped(build);
+            var finishedBuilds = previousBuilds.Except(currentBuilds);
+            foreach (var build in finishedBuilds)
+                this.BuildFinished(build);
         }
     }
 }
