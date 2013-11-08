@@ -1,11 +1,18 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Owin.Hosting;
+using TeamCityNotifier.NotificationServer.TeamCity;
 
 namespace TeamCityNotifier.NotificationServer
 {
     class Program
     {
         static void Main(string[] args)
+        {
+            MainAsync(args).Wait();
+        }
+
+        static async Task MainAsync(string[] args)
         {
             var settings = ServerSettings.ReadFrom("config.yaml");
 
@@ -14,7 +21,19 @@ namespace TeamCityNotifier.NotificationServer
             var url = "http://localhost:" + settings.Port;
             using (WebApp.Start<Startup>(url))
             {
-                Console.ReadLine();
+                var poller = new BuildsPoller(settings.TeamCity.Url, settings.TeamCity.Username,
+                    settings.TeamCity.Password, TimeSpan.FromSeconds(1));
+
+                poller.BuildStarted += build =>
+                    Console.WriteLine("Build started: {0}, {1}%", build.BuildTypeId, build.PercentageComplete);
+
+                poller.BuildUpdated += build =>
+                    Console.WriteLine("Build updated: {0}, {1}%", build.BuildTypeId, build.PercentageComplete);
+
+                poller.BuildStopped += build =>
+                    Console.WriteLine("Build stopped: {0}", build.BuildTypeId);
+
+                await poller.StartAsync();
             }
         }
     }

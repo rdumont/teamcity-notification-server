@@ -88,6 +88,9 @@
     <Compile Include="ServerSettings.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="TeamCity\Build.cs" />
+    <Compile Include="TeamCity\BuildsPoller.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TeamCity\RunningBuilds.cs" />
   </ItemGroup>
   <ItemGroup>
