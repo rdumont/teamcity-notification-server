@@ -1,1 +1,5 @@
 ﻿port: 9000
+teamCity:
+  url: http://localhost/
+  username: theusername
+  password: thepassword
