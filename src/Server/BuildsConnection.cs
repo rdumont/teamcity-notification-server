@@ -5,9 +5,10 @@ namespace TeamCityNotifier.NotificationServer
 {
     public class BuildsConnection : PersistentConnection
     {
-        protected override async Task OnReceived(IRequest request, string connectionId, string data)
+        protected override async Task OnReceived(IRequest request, string connectionId, string buildTypeId)
         {
-            await base.OnReceived(request, connectionId, data);
+            await this.Groups.Add(connectionId, buildTypeId);
+            await base.OnReceived(request, connectionId, buildTypeId);
         }
     }
 }
