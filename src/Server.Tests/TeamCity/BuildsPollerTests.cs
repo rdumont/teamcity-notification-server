@@ -17,26 +17,17 @@ namespace Server.Tests.TeamCity
             public void Trigger_build_changes_in_different_conditions()
             {
                 // Arrange
-                var previousBuilds = new[]
-                {
-                    new ListedBuild {Id = 123},
-                    new ListedBuild {Id = 456}
-                };
-                var currentBuilds = new[]
-                {
-                    new ListedBuild {Id = 987},
-                    new ListedBuild {Id = 123},
-                    new ListedBuild {Id = 789}
-                };
+                var previousBuilds = new[] {123, 456};
+                var currentBuilds = new[] {987, 123, 789};
 
                 var startingIds = new List<int>();
                 var updatingIds = new List<int>();
                 var stoppingIds = new List<int>();
 
                 var poller = new TestableBuildsPoller();
-                poller.BuildStarted += build => startingIds.Add(build.Id);
-                poller.BuildUpdated += build => updatingIds.Add(build.Id);
-                poller.BuildFinished += build => stoppingIds.Add(build.Id);
+                poller.BuildStarted += startingIds.Add;
+                poller.BuildUpdated += updatingIds.Add;
+                poller.BuildFinished += stoppingIds.Add;
 
                 // Act
                 poller.PubliclyTriggerBuildChanges(previousBuilds, currentBuilds);
@@ -55,7 +46,7 @@ namespace Server.Tests.TeamCity
         {
         }
 
-        public void PubliclyTriggerBuildChanges(ListedBuild[] previousBuilds, ListedBuild[] currentBuilds)
+        public void PubliclyTriggerBuildChanges(int[] previousBuilds, int[] currentBuilds)
         {
             base.TriggerBuildChanges(previousBuilds, currentBuilds);
         }

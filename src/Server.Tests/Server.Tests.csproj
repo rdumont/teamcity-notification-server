@@ -67,7 +67,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TeamCity\BuildsPollerTests.cs" />
-    <Compile Include="TeamCity\ListedBuildTests.cs" />
     <Compile Include="TeamCity\RestApiClientTests.cs" />
     <Compile Include="TeamCity\TeamCityEntityTests.cs" />
   </ItemGroup>

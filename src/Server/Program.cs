@@ -27,24 +27,24 @@ namespace TeamCityNotifier.NotificationServer
 
                 var connectionGroups = GlobalHost.ConnectionManager.GetConnectionContext<BuildsConnection>().Groups;
 
-                poller.BuildStarted += async shortBuild =>
+                poller.BuildStarted += async id =>
                 {
-                    var build = await teamCityClient.GetBuildAsync(shortBuild.Id);
+                    var build = await teamCityClient.GetBuildAsync(id);
                     await connectionGroups.Send(build.BuildType.Id, new BuildNotification("start", build));
                     Console.WriteLine("{0}: started", build.BuildType.Id);
                 };
 
-                poller.BuildUpdated += async shortBuild =>
+                poller.BuildUpdated += async id =>
                 {
-                    var build = await teamCityClient.GetBuildAsync(shortBuild.Id);
+                    var build = await teamCityClient.GetBuildAsync(id);
                     await connectionGroups.Send(build.BuildType.Id, new BuildNotification("update", build));
                     var percentage = build.RunningInfo == null ? 100 : build.RunningInfo.PercentageComplete;
                     Console.WriteLine("{0}: {1}%", build.BuildType.Id, percentage);
                 };
 
-                poller.BuildFinished += async shortBuild =>
+                poller.BuildFinished += async id =>
                 {
-                    var build = await teamCityClient.GetBuildAsync(shortBuild.Id);
+                    var build = await teamCityClient.GetBuildAsync(id);
                     await connectionGroups.Send(build.BuildType.Id, new BuildNotification("finish", build));
                     Console.WriteLine("{0}: finished with {1} - {2}", build.BuildType.Id, build.Status, build.StatusText);
                 };
