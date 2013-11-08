@@ -20,10 +20,15 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
         public event Action<Build> BuildUpdated;
         public event Action<Build> BuildStopped;
 
-        public BuildsPoller(string serverUrl, string username, string password, TimeSpan interval)
+        public BuildsPoller(HttpClient httpClient, TimeSpan interval)
         {
+            _client = httpClient;
             _interval = interval;
-            _client = CreateHttpClient(serverUrl, username, password);
+        }
+
+        public BuildsPoller(string serverUrl, string username, string password, TimeSpan interval)
+            : this(CreateHttpClient(serverUrl, username, password), interval)
+        {
         }
 
         public async Task StartAsync()
@@ -32,23 +37,26 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
             while (true)
             {
                 var currentBuilds = await GetRunningBuildsAsync();
-
-                var startedBuilds = currentBuilds.Except(previousBuilds).ToArray();
-                foreach (var build in startedBuilds)
-                    this.BuildStarted(build);
-
-                var updatedBuilds = currentBuilds.Except(startedBuilds);
-                foreach (var build in updatedBuilds)
-                    this.BuildUpdated(build);
-
-                var stoppedBuilds = previousBuilds.Except(currentBuilds);
-                foreach (var build in stoppedBuilds)
-                    this.BuildStopped(build);
-
+                TriggerBuildChanges(previousBuilds, currentBuilds);
                 previousBuilds = currentBuilds;
                 
                 Thread.Sleep(_interval);
             }
+        }
+
+        protected void TriggerBuildChanges(Build[] previousBuilds, Build[] currentBuilds)
+        {
+            var startedBuilds = currentBuilds.Except(previousBuilds).ToArray();
+            foreach (var build in startedBuilds)
+                this.BuildStarted(build);
+
+            var updatedBuilds = currentBuilds.Except(startedBuilds);
+            foreach (var build in updatedBuilds)
+                this.BuildUpdated(build);
+
+            var stoppedBuilds = previousBuilds.Except(currentBuilds);
+            foreach (var build in stoppedBuilds)
+                this.BuildStopped(build);
         }
 
         protected virtual async Task<Build[]> GetRunningBuildsAsync()

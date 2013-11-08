@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -10,6 +11,43 @@ namespace Server.Tests.TeamCity
     [TestFixture]
     class BuildsPollerTests
     {
+        class TriggerBuildChanges
+        {
+            [Test]
+            public void Trigger_build_changes_in_different_conditions()
+            {
+                // Arrange
+                var previousBuilds = new[]
+                {
+                    new Build {Id = 123},
+                    new Build {Id = 456}
+                };
+                var currentBuilds = new[]
+                {
+                    new Build {Id = 987},
+                    new Build {Id = 123},
+                    new Build {Id = 789}
+                };
+
+                var startingIds = new List<int>();
+                var updatingIds = new List<int>();
+                var stoppingIds = new List<int>();
+
+                var poller = new TestableBuildsPoller();
+                poller.BuildStarted += build => startingIds.Add(build.Id);
+                poller.BuildUpdated += build => updatingIds.Add(build.Id);
+                poller.BuildStopped += build => stoppingIds.Add(build.Id);
+
+                // Act
+                poller.PubliclyTriggerBuildChanges(previousBuilds, currentBuilds);
+
+                // Assert
+                Assert.That(startingIds, Is.EquivalentTo(new[] {987, 789}));
+                Assert.That(updatingIds, Is.EquivalentTo(new[] {123}));
+                Assert.That(stoppingIds, Is.EquivalentTo(new[] {456}));
+            } 
+        }
+
         class CreateHttpClient
         {
             [Test]
@@ -56,13 +94,18 @@ namespace Server.Tests.TeamCity
 
     public class TestableBuildsPoller : BuildsPoller
     {
-        public TestableBuildsPoller(string serverUrl, string username, string password, TimeSpan interval) : base(serverUrl, username, password, interval)
+        public TestableBuildsPoller() : base(null, TimeSpan.Zero)
         {
         }
 
         public static HttpClient PubliclyCreateHttpClient(string serverUrl, string username, string password)
         {
             return CreateHttpClient(serverUrl, username, password);
+        }
+
+        public void PubliclyTriggerBuildChanges(Build[] previousBuilds, Build[] currentBuilds)
+        {
+            base.TriggerBuildChanges(previousBuilds, currentBuilds);
         }
     }
 }
