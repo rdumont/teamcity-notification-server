@@ -36,6 +36,7 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
         [JsonProperty(PropertyName = "webUrl")]
         public string WebUrl { get; set; }
 
+        [JsonProperty(PropertyName = "isoStartDate")]
         public DateTimeOffset StartDate
         {
             get
