@@ -20,6 +20,7 @@ namespace TeamCityNotifier.NotificationServer
 
         protected virtual Task AddToGroups(string connectionId, string buildTypeId)
         {
+            Console.WriteLine("Connection {0} registered to build {1}", connectionId.Substring(0, 8), buildTypeId);
             return this.Groups.Add(connectionId, buildTypeId);
         }
     }
