@@ -11,6 +11,7 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
     public class RestApiClient
     {
         private const string RunningBuildsPath = "httpAuth/app/rest/builds?locator=running:true";
+        private const string BuildByIdPath = "httpAuth/app/rest/builds/id:{0}";
 
         private readonly HttpClient _httpClient;
 
@@ -34,6 +35,17 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
 
             var builds = await response.Content.ReadAsAsync<BuildsCollection>();
             return builds != null ? builds.Builds.ToArray() : new ListedBuild[0];
+        }
+
+        public virtual async Task<FullBuild> GetBuildAsync(int id)
+        {
+            var response = await _httpClient.GetAsync(string.Format(BuildByIdPath, id));
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                throw new HttpRequestException("Status code was " + response.StatusCode);
+            }
+
+            return await response.Content.ReadAsAsync<FullBuild>();
         }
 
         public static HttpClient CreateHttpClient(string serverUrl, string username, string password)
