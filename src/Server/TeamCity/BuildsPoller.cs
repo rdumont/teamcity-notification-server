@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,11 +28,31 @@ namespace TeamCityNotifier.NotificationServer.TeamCity
             var previousBuilds = new int[0];
             while (true)
             {
-                var currentBuildObjects = await _client.GetRunningBuildsAsync();
-                var currentBuilds = currentBuildObjects.Select(build => build.Id).ToArray();
-                TriggerBuildChanges(previousBuilds, currentBuilds);
-                previousBuilds = currentBuilds;
-                
+                try
+                {
+                    var currentBuildObjects = await _client.GetRunningBuildsAsync();
+                    var currentBuilds = currentBuildObjects.Select(build => build.Id).ToArray();
+                    TriggerBuildChanges(previousBuilds, currentBuilds);
+                    previousBuilds = currentBuilds;
+                }
+                catch (Exception exception)
+                {
+                    if (!(exception is HttpRequestException))
+                        throw;
+
+                    var builder = new StringBuilder();
+                    builder.AppendFormat("{0}: {1}", exception.GetType().Name, exception.Message);
+
+                    var inner = exception.InnerException;
+                    while (inner != null)
+                    {
+                        builder.AppendFormat(" ---> {0}: {1}", inner.GetType().Name, inner.Message);
+                        inner = inner.InnerException;
+                    }
+                    builder.AppendLine();
+                    Console.WriteLine(builder);
+                }
+
                 Thread.Sleep(_interval);
             }
         }
